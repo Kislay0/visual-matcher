@@ -1,0 +1,23 @@
+[
+  {
+    "id": 0,
+    "name": "bottle",
+    "image_path": "data/products\\bottle.jpeg",
+    "thumb": "/static/bottle.jpeg",
+    "category": "unknown"
+  },
+  {
+    "id": 1,
+    "name": "gloves",
+    "image_path": "data/products\\gloves.jpeg",
+    "thumb": "/static/gloves.jpeg",
+    "category": "unknown"
+  },
+  {
+    "id": 2,
+    "name": "shoes",
+    "image_path": "data/products\\shoes.jpeg",
+    "thumb": "/static/shoes.jpeg",
+    "category": "unknown"
+  }
+]

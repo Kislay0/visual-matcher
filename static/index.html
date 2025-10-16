@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Visual Product Matcher — Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 12px; }
+    .row { display:flex; gap:12px; align-items:center; }
+    .preview { width:200px; height:200px; border:1px solid #ddd; object-fit:cover; }
+    .results { display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:16px; }
+    .card { border:1px solid #eee; padding:8px; border-radius:6px; }
+    .badge { display:inline-block; padding:2px 6px; background:#eee; border-radius:4px; font-size:12px; margin-right:6px; }
+  </style>
+</head>
+<body>
+  <h1>Visual Product Matcher — Demo</h1>
+  <p>Upload an image file or provide an image URL. This demo searches local inventory and eBay (if configured).</p>
+
+  <div>
+    <div class="row">
+      <input type="file" id="fileInput">
+      <input type="text" id="urlInput" placeholder="Or paste image URL here" style="flex:1">
+      <button id="searchBtn">Search</button>
+    </div>
+    <div style="margin-top:8px">
+      <img id="preview" class="preview" src="" alt="preview">
+      <div style="display:inline-block; margin-left:12px; vertical-align:top;">
+        <label>Top K: <input id="topk" type="number" value="10" style="width:60px"></label>
+        <label style="margin-left:8px">Include online (eBay): <input id="online" type="checkbox" checked></label>
+      </div>
+    </div>
+    <div id="status" style="margin-top:8px; color:#666"></div>
+    <div id="results" class="results"></div>
+  </div>
+
+<script>
+document.getElementById('fileInput').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  document.getElementById('preview').src = url;
+});
+
+document.getElementById('urlInput').addEventListener('input', e=>{
+  const v = e.target.value;
+  document.getElementById('preview').src = v;
+});
+
+document.getElementById('searchBtn').addEventListener('click', async ()=>{
+  const fileInput = document.getElementById('fileInput');
+  const urlInput = document.getElementById('urlInput').value.trim();
+  const topk = parseInt(document.getElementById('topk').value || "10");
+  const include_online = document.getElementById('online').checked;
+
+  const fd = new FormData();
+  fd.append('top_k', topk);
+  fd.append('include_online', include_online ? 'true' : 'false');
+
+  if(fileInput.files && fileInput.files.length>0){
+    fd.append('file', fileInput.files[0]);
+  } else if (urlInput){
+    fd.append('image_url', urlInput);
+  } else {
+    alert('Choose a file or paste an image URL');
+    return;
+  }
+
+  document.getElementById('status').textContent = 'Searching... (this may take 5-20 seconds for the first request)';
+  document.getElementById('results').innerHTML = '';
+
+  try {
+    const resp = await fetch('/search', { method:'POST', body: fd });
+    if(!resp.ok){
+      const t = await resp.text();
+      document.getElementById('status').textContent = 'Error: ' + t;
+      return;
+    }
+    const j = await resp.json();
+    document.getElementById('status').textContent = 'Found ' + (j.results ? j.results.length : 0) + ' results';
+    const container = document.getElementById('results');
+    for(const r of (j.results || [])){
+      const card = document.createElement('div');
+      card.className = 'card';
+      const thumb = document.createElement('img');
+      thumb.src = r.thumb ? r.thumb.replace('/static/','/static/') : (r.image || '');
+      thumb.style.width = '100%';
+      thumb.style.height = '160px';
+      thumb.style.objectFit = 'cover';
+      const title = document.createElement('div');
+      title.innerHTML = `<strong>${r.name||''}</strong>`;
+      const meta = document.createElement('div');
+      meta.innerHTML = `<span class="badge">${r.source}</span> score: ${r.score ? r.score.toFixed(3) : 'n/a'}`;
+      card.appendChild(thumb);
+      card.appendChild(title);
+      card.appendChild(meta);
+      if(r.web_link){
+        const a = document.createElement('a');
+        a.href = r.web_link;
+        a.target = '_blank';
+        a.textContent = 'View';
+        a.style.display = 'inline-block';
+        a.style.marginTop = '6px';
+        card.appendChild(a);
+      }
+      container.appendChild(card);
+    }
+  } catch(err){
+    document.getElementById('status').textContent = 'Error: ' + err;
+  }
+});
+</script>
+</body>
+</html>

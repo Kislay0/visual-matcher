@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* New palette: warm / soft gradient background + teal accent */
+:root {
+  --bg-top: #f2f7f6;        /* soft pale */
+  --bg-bottom: #eef6f5;     /* subtle gradient */
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --accent: #0ea5a4;
+  --accent-600: #028489;
+  --ink: #0f172a;
+  --glass: rgba(255,255,255,0.82);
+}
+
+/* Use Inter font (loaded from index.html) */
+body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color: var(--ink); 
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  min-height: 100vh;
+}
+
+/* very subtle repeating radial texture to break up flat white */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(2,132,137,0.02) 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 70%, rgba(14,165,164,0.012) 0 2px, transparent 4px);
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+/* hero */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 1.75rem 0;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -15% -10% auto -10%;
+  height: 140%;
+  background-image: radial-gradient(circle at 10% 20%, rgba(14,165,164,0.05) 0 8%, transparent 26%),
+                    radial-gradient(circle at 85% 70%, rgba(2,132,137,0.03) 0 6%, transparent 20%);
+  transform: rotate(-6deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* hero inner card */
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.94));
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+}
+
+/* UI building blocks */
+.card { background: var(--panel); border-radius: 14px; box-shadow: 0 8px 28px rgba(16,24,40,0.06); }
+.bg-panel { background: var(--panel); }
+
+/* dotted drop area */
+.drop-area {
+  border: 2px dashed rgba(15,23,42,0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));
+  border-radius: 12px;
+  padding: 26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition: box-shadow .18s ease, transform .12s ease;
+}
+.drop-area:hover { box-shadow: 0 12px 30px rgba(2,132,137,0.08); transform: translateY(-2px); }
+.drop-area.drag { box-shadow: 0 16px 40px rgba(2,132,137,0.12); transform: translateY(-4px); }
+
+/* preview area sizes */
+.preview-h { height: 240px; }
+@media (min-width: 1024px) { .preview-h { height: 360px; } }
+
+/* result card hover/scale */
+.result-card { transform: translateY(0); transition: transform .26s cubic-bezier(.2,.9,.2,1), box-shadow .26s; }
+.result-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 38px rgba(2,132,137,0.12); }
+
+/* image zoom */
+.result-img { transition: transform .45s cubic-bezier(.2,.9,.2,1); object-fit: cover; }
+.result-card:hover .result-img { transform: scale(1.06); }
+
+/* price pill */
+.price-pill {
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-600) 100%);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .95rem;
+}
+
+/* seller row and favicon */
+.seller-row { font-size: 12px; color: #475569; display:flex; align-items:center; gap:8px; }
+.seller-fav { width:16px; height:16px; border-radius:3px; display:inline-block; }
+
+/* skeleton shimmer */
+@keyframes shimmer { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+.skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(240,240,240,0.6) 50%, rgba(255,255,255,0.6) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; border-radius: 8px; }
+
+/* about dark: increase contrast text colors */
+.about-dark { background: #032128; color: #e6f8f7; border-radius: 14px; padding: 28px; }
+
+/* -----------------------------
+   number input visual affordance
+   -----------------------------
+   Make number boxes (Top K, min-sim number input) have a clear black outline so they're obviously editable.
+*/
+.num-input {
+  border: 2px solid #0f172a; /* black-ish outline */
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: white;
+  width: 84px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--ink);
+}
+.num-input:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(2,132,137,0.12);
+  border-color: var(--accent-600);
+}
+
+/* responsive tweaks */
+@media (max-width: 768px) {
+  .hero-inner { padding: 16px; }
+  .preview-h { height: 220px; }
+}
