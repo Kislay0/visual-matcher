@@ -2,7 +2,8 @@
 
 > An intelligent visual search app that finds **visually similar products** from a local dataset and **online marketplaces** (like eBay) — powered by AI embeddings (CLIP), FAISS vector search, and a modern React + Tailwind frontend.
 
-![Demo Screenshot](docs/demo-screenshot.png) <!-- optional; add a screenshot if available -->
+![Demo Screenshot](ScreenShots/Screenshot%202025-10-17%20045058.png) <!-- optional; add a screenshot if available -->
+![Demo Screenshot](ScreenShots/Screenshot 2025-10-17 045134)
 
 ---
 
